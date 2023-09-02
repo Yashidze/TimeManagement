@@ -4,21 +4,20 @@ package com.example.timemanagement
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var taskListView: ListView
     private val tasks = mutableListOf<Task>()
+    private val adapter by lazy { TaskAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         taskListView = findViewById(R.id.taskListView)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, tasks.map { it.name })
+        adapter.addAll(tasks)
         taskListView.adapter = adapter
 
         taskListView.setOnItemClickListener { _, _, position, _ ->
@@ -43,7 +42,9 @@ class MainActivity : AppCompatActivity() {
             if (taskName != null && taskDescription != null) {
                 val task = Task(taskName, taskDescription)
                 tasks.add(task)
-                (taskListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
+                adapter.clear()
+                adapter.addAll(tasks)
+                adapter.notifyDataSetChanged()
             }
         }
     }
